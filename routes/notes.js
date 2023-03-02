@@ -2,7 +2,13 @@ const notes = require('express').Router();
 const { v4: uuidv4 } = require('uuid');
 const { readAndAppend, readFromFile, writeToFile } = require('../public/assets/js/fsUtils');
 
+//get request
 notes.get('/', (req, res) => {
+    readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
+});
+
+//post request
+notes.post('/', (req, res) => {
     console.log(req.body);
     const { title, text } = req.body;
     if (req.body) {
@@ -12,12 +18,14 @@ notes.get('/', (req, res) => {
             id: uuidv4(),
         };
         readAndAppend(newNoteAdded, './db/db.json');
-        res.json(`Note added successfuly`);
+        res.json(`Note added successfully!`);
+
     } else {
-        res.errored(`Error - note failed to be added`)
+        res.error(`An error occurred while adding note!`)
     }
 });
-
+    
+//delete request
 notes.delete('/:id', (req, res) => {
     const noteId = req.params.id;
     readFromFile('./db/db.json')
